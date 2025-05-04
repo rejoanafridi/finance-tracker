@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { FinanceProvider } from "@/context/finance-context"
 import { useState } from "react"
 import { Toaster } from "sonner"
+import { LoadingProvider } from "@/context/loading-context"
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -28,8 +29,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <SessionProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <FinanceProvider>{children}</FinanceProvider>
-          <Toaster position="top-right" />
+          <LoadingProvider>
+            <FinanceProvider>{children}</FinanceProvider>
+            <Toaster position="top-right" />
+          </LoadingProvider>
         </ThemeProvider>
       </SessionProvider>
       <ReactQueryDevtools initialIsOpen={false} />

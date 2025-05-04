@@ -3,7 +3,8 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Receipt, Settings, Wallet, PieChart } from "lucide-react"
+import { LayoutDashboard, Receipt, Settings, Wallet, PieChart, User } from "lucide-react"
+import { motion } from "framer-motion"
 
 export function MainNav() {
   const pathname = usePathname()
@@ -28,6 +29,12 @@ export function MainNav() {
       active: pathname === "/budgets",
     },
     {
+      href: "/profile",
+      label: "Profile",
+      icon: User,
+      active: pathname === "/profile",
+    },
+    {
       href: "/settings",
       label: "Settings",
       icon: Settings,
@@ -47,12 +54,21 @@ export function MainNav() {
             key={route.href}
             href={route.href}
             className={cn(
-              "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
+              "relative flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
               route.active ? "text-primary" : "text-muted-foreground",
             )}
           >
             <route.icon className="h-4 w-4" />
             {route.label}
+            {route.active && (
+              <motion.div
+                className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary"
+                layoutId="navbar-indicator"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2 }}
+              />
+            )}
           </Link>
         ))}
       </nav>

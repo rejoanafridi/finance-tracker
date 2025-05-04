@@ -14,6 +14,8 @@ import { EditTransactionDialog } from "./edit-transaction-dialog"
 import { DeleteTransactionDialog } from "./delete-transaction-dialog"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { EmptyState } from "./empty-state"
+import { useRouter } from "next/navigation"
 
 export function TransactionList() {
   const { transactions, filteredTransactions, isLoading, error } = useFinance()
@@ -22,6 +24,8 @@ export function TransactionList() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
   const [isMounted, setIsMounted] = useState(false)
+
+  const router = useRouter()
 
   useEffect(() => {
     setIsMounted(true)
@@ -200,7 +204,11 @@ export function TransactionList() {
               </TableHeader>
               <TableBody>
                 {displayTransactions.map((transaction) => (
-                  <TableRow key={transaction.id}>
+                  <TableRow
+                    key={transaction.id}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => router.push(`/transactions/${transaction.id}`)}
+                  >
                     <TableCell>{formatDate(transaction.date)}</TableCell>
                     <TableCell>{transaction.description}</TableCell>
                     <TableCell>
@@ -217,11 +225,25 @@ export function TransactionList() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(transaction)}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleEdit(transaction)
+                          }}
+                        >
                           <Edit className="h-4 w-4" />
                           <span className="sr-only">Edit</span>
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(transaction)}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDelete(transaction)
+                          }}
+                        >
                           <Trash2 className="h-4 w-4" />
                           <span className="sr-only">Delete</span>
                         </Button>
@@ -233,15 +255,7 @@ export function TransactionList() {
             </Table>
           </div>
         ) : (
-          <div className="flex h-[300px] items-center justify-center">
-            <div className="text-center">
-              <p className="text-muted-foreground">No transactions found</p>
-              <Button variant="outline" className="mt-4" onClick={() => setShowAddDialog(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add your first transaction
-              </Button>
-            </div>
-          </div>
+          <EmptyState onAddClick={() => setShowAddDialog(true)} />
         )}
       </CardContent>
       <AddTransactionDialog open={showAddDialog} onOpenChange={setShowAddDialog} />

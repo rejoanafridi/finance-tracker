@@ -1,6 +1,6 @@
 "use client"
 
-import { useFinance } from "@/context/finance-context"
+import { useDashboard } from "@/hooks/use-dashboard"
 import { formatCurrency } from "@/lib/utils"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -9,15 +9,18 @@ import { Bar, BarChart, Pie, PieChart, ResponsiveContainer, Sector, XAxis, YAxis
 import { useState, useEffect } from "react"
 
 export function MonthlyChart() {
-  const { transactions, categorySummary } = useFinance()
+  const { dashboardData, isLoading } = useDashboard()
   const [activeIndex, setActiveIndex] = useState(0)
   const [isMounted, setIsMounted] = useState(false)
+
+  const monthlyData = dashboardData?.monthlyData || []
+  const categorySummary = dashboardData?.categorySummary || {}
 
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  if (!isMounted) {
+  if (!isMounted || isLoading) {
     return (
       <Card className="h-full">
         <CardHeader>
@@ -34,27 +37,27 @@ export function MonthlyChart() {
   }
 
   // Prepare data for monthly income/expense chart
-  const monthlyData = transactions.reduce(
-    (acc, transaction) => {
-      const date = new Date(transaction.date)
-      const month = date.toLocaleString("default", { month: "short" })
+  // const monthlyData = transactions.reduce(
+  //   (acc, transaction) => {
+  //     const date = new Date(transaction.date)
+  //     const month = date.toLocaleString("default", { month: "short" })
 
-      if (!acc[month]) {
-        acc[month] = { month, income: 0, expense: 0 }
-      }
+  //     if (!acc[month]) {
+  //       acc[month] = { month, income: 0, expense: 0 }
+  //     }
 
-      if (transaction.type === "income") {
-        acc[month].income += transaction.amount
-      } else {
-        acc[month].expense += transaction.amount
-      }
+  //     if (transaction.type === "income") {
+  //       acc[month].income += transaction.amount
+  //     } else {
+  //       acc[month].expense += transaction.amount
+  //     }
 
-      return acc
-    },
-    {} as Record<string, { month: string; income: number; expense: number }>,
-  )
+  //     return acc
+  //   },
+  //   {} as Record<string, { month: string; income: number; expense: number }>,
+  // )
 
-  const barChartData = Object.values(monthlyData)
+  const barChartData = monthlyData
 
   // Prepare data for category pie chart
   const pieChartData = Object.entries(categorySummary).map(([name, amount], index) => ({

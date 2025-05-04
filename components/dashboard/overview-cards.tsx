@@ -1,6 +1,6 @@
 "use client"
 
-import { useFinance } from "@/context/finance-context"
+import { useDashboard } from "@/hooks/use-dashboard"
 import { formatCurrency } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowDownIcon, ArrowUpIcon, DollarSign } from "lucide-react"
@@ -8,7 +8,10 @@ import { motion } from "framer-motion"
 import { useState, useEffect } from "react"
 
 export function OverviewCards() {
-  const { totalIncome, totalExpenses, balance } = useFinance()
+  const { dashboardData, isLoading } = useDashboard()
+  const totalIncome = dashboardData?.totalIncome || 0
+  const totalExpenses = dashboardData?.totalExpenses || 0
+  const balance = dashboardData?.balance || 0
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -30,7 +33,7 @@ export function OverviewCards() {
     show: { y: 0, opacity: 1 },
   }
 
-  if (!isMounted) {
+  if (!isMounted || isLoading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((i) => (

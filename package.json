@@ -67,8 +67,8 @@
     "mongoose": "latest",
     "http": "latest",
     "socket.io": "latest",
-    "socket.io-client": "latest",
     "framer-motion": "latest",
+    "socket.io-client": "latest",
     "@tanstack/react-query-devtools": "latest"
   },
   "devDependencies": {

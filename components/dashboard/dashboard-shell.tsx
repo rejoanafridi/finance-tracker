@@ -1,7 +1,6 @@
 import type React from "react"
-import { MainNav } from "@/components/layout/main-nav"
-import { MobileNav } from "@/components/layout/mobile-nav"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { Header } from "@/components/layout/header"
+import { PageTransition } from "@/components/page-transition"
 
 interface DashboardShellProps {
   children: React.ReactNode
@@ -10,17 +9,11 @@ interface DashboardShellProps {
 export function DashboardShell({ children }: DashboardShellProps) {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 border-b bg-background">
-        <div className="container flex h-16 items-center justify-between py-4">
-          <MainNav />
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <MobileNav />
-          </div>
-        </div>
-      </header>
+      <Header />
       <main className="flex-1">
-        <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">{children}</div>
+        <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <PageTransition>{children}</PageTransition>
+        </div>
       </main>
     </div>
   )

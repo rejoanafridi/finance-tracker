@@ -6,7 +6,8 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { LayoutDashboard, Menu, Receipt, Settings, Wallet, PieChart } from "lucide-react"
+import { LayoutDashboard, Menu, Receipt, Settings, Wallet, PieChart, User } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
 export function MobileNav() {
   const [open, setOpen] = useState(false)
@@ -32,6 +33,12 @@ export function MobileNav() {
       active: pathname === "/budgets",
     },
     {
+      href: "/profile",
+      label: "Profile",
+      icon: User,
+      active: pathname === "/profile",
+    },
+    {
       href: "/settings",
       label: "Settings",
       icon: Settings,
@@ -48,28 +55,38 @@ export function MobileNav() {
         </Button>
       </SheetTrigger>
       <SheetContent side="right">
-        <div className="px-2 py-6">
-          <Link href="/" className="mb-8 flex items-center gap-2" onClick={() => setOpen(false)}>
-            <Wallet className="h-6 w-6" />
-            <span className="font-bold">Finance Tracker</span>
-          </Link>
-          <nav className="flex flex-col gap-4">
-            {routes.map((route) => (
-              <Link
-                key={route.href}
-                href={route.href}
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
-                  route.active ? "text-primary" : "text-muted-foreground",
-                )}
-              >
-                <route.icon className="h-5 w-5" />
-                {route.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
+        <AnimatePresence>
+          <div className="px-2 py-6">
+            <Link href="/" className="mb-8 flex items-center gap-2" onClick={() => setOpen(false)}>
+              <Wallet className="h-6 w-6" />
+              <span className="font-bold">Finance Tracker</span>
+            </Link>
+            <nav className="flex flex-col gap-4">
+              {routes.map((route) => (
+                <motion.div
+                  key={route.href}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Link
+                    href={route.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                      route.active
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                    )}
+                  >
+                    <route.icon className="h-5 w-5" />
+                    {route.label}
+                  </Link>
+                </motion.div>
+              ))}
+            </nav>
+          </div>
+        </AnimatePresence>
       </SheetContent>
     </Sheet>
   )

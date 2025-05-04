@@ -13,6 +13,7 @@ import { AddBudgetDialog } from "./add-budget-dialog"
 import { EditBudgetDialog } from "./edit-budget-dialog"
 import { DeleteBudgetDialog } from "./delete-budget-dialog"
 import { Skeleton } from "@/components/ui/skeleton"
+import { EmptyState } from "./empty-state"
 
 export function BudgetList() {
   const [period, setPeriod] = useState<"monthly" | "quarterly" | "yearly">("monthly")
@@ -119,15 +120,7 @@ export function BudgetList() {
             </TableBody>
           </Table>
         ) : (
-          <div className="flex h-[300px] items-center justify-center">
-            <div className="text-center">
-              <p className="text-muted-foreground">No budgets found for this period</p>
-              <Button variant="outline" className="mt-4" onClick={() => setShowAddDialog(true)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add your first budget
-              </Button>
-            </div>
-          </div>
+          <EmptyState onAddClick={() => setShowAddDialog(true)} />
         )}
       </CardContent>
       <AddBudgetDialog open={showAddDialog} onOpenChange={setShowAddDialog} defaultPeriod={period} />

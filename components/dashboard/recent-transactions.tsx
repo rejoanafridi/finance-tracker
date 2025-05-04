@@ -1,6 +1,6 @@
 "use client"
 
-import { useFinance } from "@/context/finance-context"
+import { useDashboard } from "@/hooks/use-dashboard"
 import { formatCurrency, formatDate } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,7 +11,8 @@ import { AddTransactionDialog } from "@/components/transactions/add-transaction-
 import { useState, useEffect } from "react"
 
 export function RecentTransactions() {
-  const { transactions } = useFinance()
+  const { dashboardData, isLoading } = useDashboard()
+  const recentTransactions = dashboardData?.recentTransactions || []
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
@@ -19,7 +20,7 @@ export function RecentTransactions() {
     setIsMounted(true)
   }, [])
 
-  if (!isMounted) {
+  if (!isMounted || isLoading) {
     return (
       <Card className="h-full">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -38,9 +39,9 @@ export function RecentTransactions() {
   }
 
   // Get the 5 most recent transactions
-  const recentTransactions = [...transactions]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 5)
+  // const recentTransactions = [...transactions]
+  //   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  //   .slice(0, 5)
 
   return (
     <Card className="h-full">

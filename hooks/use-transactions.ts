@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useSocket } from "./use-socket"
 import { useEffect } from "react"
 import type { Transaction } from "@/types"
+import { toast } from "sonner"
 
 // API functions
 async function fetchTransactions(filters?: Record<string, string>) {
@@ -11,7 +12,8 @@ async function fetchTransactions(filters?: Record<string, string>) {
   const response = await fetch(`/api/transactions?${queryParams}`)
 
   if (!response.ok) {
-    throw new Error("Failed to fetch transactions")
+    const error = await response.json()
+    throw new Error(error.error || "Failed to fetch transactions")
   }
 
   return response.json()
@@ -27,7 +29,8 @@ async function createTransaction(transaction: Omit<Transaction, "id">) {
   })
 
   if (!response.ok) {
-    throw new Error("Failed to create transaction")
+    const error = await response.json()
+    throw new Error(error.error || "Failed to create transaction")
   }
 
   return response.json()
@@ -43,7 +46,8 @@ async function updateTransaction(transaction: Transaction) {
   })
 
   if (!response.ok) {
-    throw new Error("Failed to update transaction")
+    const error = await response.json()
+    throw new Error(error.error || "Failed to update transaction")
   }
 
   return response.json()
@@ -55,7 +59,8 @@ async function deleteTransaction(id: string) {
   })
 
   if (!response.ok) {
-    throw new Error("Failed to delete transaction")
+    const error = await response.json()
+    throw new Error(error.error || "Failed to delete transaction")
   }
 
   return response.json()
@@ -70,9 +75,12 @@ export function useTransactions(filters?: Record<string, string>) {
     data: transactions = [],
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: ["transactions", filters],
     queryFn: () => fetchTransactions(filters),
+    retry: 2,
+    staleTime: 1000 * 60, // 1 minute
   })
 
   // Mutation for creating a transaction
@@ -80,11 +88,15 @@ export function useTransactions(filters?: Record<string, string>) {
     mutationFn: createTransaction,
     onSuccess: (newTransaction) => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] })
+      toast.success("Transaction created successfully")
 
       // Emit socket event
       if (socket && isConnected) {
         socket.emit("transaction:create", newTransaction)
       }
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to create transaction")
     },
   })
 
@@ -93,11 +105,15 @@ export function useTransactions(filters?: Record<string, string>) {
     mutationFn: updateTransaction,
     onSuccess: (updatedTransaction) => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] })
+      toast.success("Transaction updated successfully")
 
       // Emit socket event
       if (socket && isConnected) {
         socket.emit("transaction:update", updatedTransaction)
       }
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to update transaction")
     },
   })
 
@@ -106,11 +122,15 @@ export function useTransactions(filters?: Record<string, string>) {
     mutationFn: deleteTransaction,
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] })
+      toast.success("Transaction deleted successfully")
 
       // Emit socket event
       if (socket && isConnected) {
         socket.emit("transaction:delete", { id })
       }
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete transaction")
     },
   })
 
@@ -119,15 +139,22 @@ export function useTransactions(filters?: Record<string, string>) {
     if (!socket || !isConnected) return
 
     const handleTransactionCreated = (transaction: Transaction) => {
+      toast.info("New transaction added")
       queryClient.invalidateQueries({ queryKey: ["transactions"] })
+      // Also invalidate dashboard data
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] })
     }
 
     const handleTransactionUpdated = (transaction: Transaction) => {
+      toast.info("Transaction updated")
       queryClient.invalidateQueries({ queryKey: ["transactions"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] })
     }
 
     const handleTransactionDeleted = ({ id }: { id: string }) => {
+      toast.info("Transaction deleted")
       queryClient.invalidateQueries({ queryKey: ["transactions"] })
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] })
     }
 
     socket.on("transaction:created", handleTransactionCreated)
@@ -156,6 +183,7 @@ export function useTransactions(filters?: Record<string, string>) {
     transactions,
     isLoading,
     error,
+    refetch,
     createTransaction: createMutation.mutate,
     updateTransaction: updateMutation.mutate,
     deleteTransaction: deleteMutation.mutate,
