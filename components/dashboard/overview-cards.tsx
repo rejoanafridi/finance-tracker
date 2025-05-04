@@ -1,13 +1,19 @@
 "use client"
 
-import { useTransactions } from "@/hooks/use-transactions"
+import { useFinance } from "@/context/finance-context"
 import { formatCurrency } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowDownIcon, ArrowUpIcon, DollarSign } from "lucide-react"
 import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
 
 export function OverviewCards() {
-  const { totalIncome, totalExpenses, balance } = useTransactions()
+  const { totalIncome, totalExpenses, balance } = useFinance()
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const container = {
     hidden: { opacity: 0 },
@@ -22,6 +28,24 @@ export function OverviewCards() {
   const item = {
     hidden: { y: 20, opacity: 0 },
     show: { y: 0, opacity: 1 },
+  }
+
+  if (!isMounted) {
+    return (
+      <div className="grid md:grid-cols-3 gap-6">
+        {[1, 2, 3].map((i) => (
+          <Card key={i}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Loading...</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">$0.00</div>
+              <p className="text-xs text-muted-foreground">Loading...</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )
   }
 
   return (

@@ -8,11 +8,34 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Plus } from "lucide-react"
 import Link from "next/link"
 import { AddTransactionDialog } from "@/components/transactions/add-transaction-dialog"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export function RecentTransactions() {
   const { transactions } = useFinance()
   const [showAddDialog, setShowAddDialog] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) {
+    return (
+      <Card className="h-full">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <div>
+            <CardTitle>Recent Transactions</CardTitle>
+            <CardDescription>Loading...</CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex h-[300px] items-center justify-center">
+            <p className="text-muted-foreground">Loading transactions...</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   // Get the 5 most recent transactions
   const recentTransactions = [...transactions]

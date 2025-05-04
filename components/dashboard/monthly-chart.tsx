@@ -6,11 +6,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Bar, BarChart, Pie, PieChart, ResponsiveContainer, Sector, XAxis, YAxis } from "recharts"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export function MonthlyChart() {
   const { transactions, categorySummary } = useFinance()
   const [activeIndex, setActiveIndex] = useState(0)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) {
+    return (
+      <Card className="h-full">
+        <CardHeader>
+          <CardTitle>Financial Overview</CardTitle>
+          <CardDescription>Loading...</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px] flex items-center justify-center">
+            <p>Loading chart data...</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   // Prepare data for monthly income/expense chart
   const monthlyData = transactions.reduce(

@@ -60,16 +60,16 @@
     "zod": "latest",
     "@auth/core": "latest",
     "nodemailer": "latest",
-    "@tanstack/react-query": "latest",
     "@emotion/is-prop-valid": "latest",
+    "@tanstack/react-query": "latest",
     "bcryptjs": "latest",
     "mongoose": "latest",
     "next-auth": "latest",
     "http": "latest",
     "socket.io": "latest",
     "socket.io-client": "latest",
-    "@tanstack/react-query-devtools": "latest",
-    "framer-motion": "latest"
+    "framer-motion": "latest",
+    "@tanstack/react-query-devtools": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",

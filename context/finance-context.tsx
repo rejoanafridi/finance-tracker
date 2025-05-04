@@ -54,29 +54,41 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([])
   const [categories, setCategories] = useState<string[]>(defaultCategories)
   const [filters, setFilters] = useState<FilterOptions>({})
+  const [isClient, setIsClient] = useState(false)
 
-  // Load data from localStorage on initial render
+  // Set isClient to true when component mounts
   useEffect(() => {
-    const storedTransactions = localStorage.getItem("finance_transactions")
-    const storedCategories = localStorage.getItem("finance_categories")
-
-    if (storedTransactions) {
-      setTransactions(JSON.parse(storedTransactions))
-    }
-
-    if (storedCategories) {
-      setCategories(JSON.parse(storedCategories))
-    }
+    setIsClient(true)
   }, [])
 
-  // Save data to localStorage whenever it changes
+  // Load data from localStorage on initial render (only on client)
   useEffect(() => {
-    localStorage.setItem("finance_transactions", JSON.stringify(transactions))
-  }, [transactions])
+    if (isClient) {
+      const storedTransactions = localStorage.getItem("finance_transactions")
+      const storedCategories = localStorage.getItem("finance_categories")
+
+      if (storedTransactions) {
+        setTransactions(JSON.parse(storedTransactions))
+      }
+
+      if (storedCategories) {
+        setCategories(JSON.parse(storedCategories))
+      }
+    }
+  }, [isClient])
+
+  // Save data to localStorage whenever it changes (only on client)
+  useEffect(() => {
+    if (isClient) {
+      localStorage.setItem("finance_transactions", JSON.stringify(transactions))
+    }
+  }, [transactions, isClient])
 
   useEffect(() => {
-    localStorage.setItem("finance_categories", JSON.stringify(categories))
-  }, [categories])
+    if (isClient) {
+      localStorage.setItem("finance_categories", JSON.stringify(categories))
+    }
+  }, [categories, isClient])
 
   // Calculate totals
   const totalIncome = transactions.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0)
@@ -165,6 +177,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
   // Data management
   const exportData = () => {
+    if (!isClient) return
+
     const data = {
       transactions,
       categories,
