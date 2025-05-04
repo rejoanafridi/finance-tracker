@@ -32,7 +32,7 @@ export function OverviewCards() {
 
   if (!isMounted) {
     return (
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((i) => (
           <Card key={i}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -49,7 +49,12 @@ export function OverviewCards() {
   }
 
   return (
-    <motion.div className="grid md:grid-cols-3 gap-6" variants={container} initial="hidden" animate="show">
+    <motion.div
+      className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
       <motion.div variants={item}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -76,7 +81,7 @@ export function OverviewCards() {
         </Card>
       </motion.div>
 
-      <motion.div variants={item}>
+      <motion.div variants={item} className="sm:col-span-2 lg:col-span-1">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Current Balance</CardTitle>

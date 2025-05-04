@@ -20,7 +20,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         </div>
       </header>
       <main className="flex-1">
-        <div className="container grid items-start gap-6 py-8">{children}</div>
+        <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">{children}</div>
       </main>
     </div>
   )

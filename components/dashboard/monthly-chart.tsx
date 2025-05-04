@@ -131,7 +131,7 @@ export function MonthlyChart() {
           <TabsContent value="bar" className="h-[300px]">
             <ChartContainer>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barChartData}>
+                <BarChart data={barChartData} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
                   <XAxis dataKey="month" />
                   <YAxis tickFormatter={(value) => `$${value}`} />
                   <ChartTooltip

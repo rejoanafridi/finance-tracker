@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, Search, X } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export function TransactionFilters() {
   const { categories, applyFilters, clearFilters } = useFinance()
@@ -18,6 +19,11 @@ export function TransactionFilters() {
   const [type, setType] = useState<string>("")
   const [date, setDate] = useState<Date | undefined>(undefined)
   const [isInitialRender, setIsInitialRender] = useState(true)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Only apply filters after initial render to prevent infinite loop
   useEffect(() => {
@@ -25,6 +31,8 @@ export function TransactionFilters() {
       setIsInitialRender(false)
       return
     }
+
+    if (!isMounted) return
 
     const timer = setTimeout(() => {
       applyFilters({
@@ -36,7 +44,7 @@ export function TransactionFilters() {
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [applyFilters, searchTerm, category, type, date, isInitialRender])
+  }, [applyFilters, searchTerm, category, type, date, isInitialRender, isMounted])
 
   const handleClearFilters = () => {
     setSearchTerm("")
@@ -44,6 +52,19 @@ export function TransactionFilters() {
     setType("")
     setDate(undefined)
     clearFilters()
+  }
+
+  if (!isMounted) {
+    return (
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <Skeleton className="h-10 w-full sm:w-1/3" />
+        <div className="flex flex-wrap gap-2">
+          <Skeleton className="h-10 w-[180px]" />
+          <Skeleton className="h-10 w-[180px]" />
+          <Skeleton className="h-10 w-[180px]" />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -64,7 +85,7 @@ export function TransactionFilters() {
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Categories</SelectItem>
+            <SelectItem value="all">All Categories</SelectItem>
             {categories.map((cat) => (
               <SelectItem key={cat} value={cat}>
                 {cat}

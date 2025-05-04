@@ -49,7 +49,11 @@ export function RecentTransactions() {
           <CardTitle>Recent Transactions</CardTitle>
           <CardDescription>Your latest financial activity</CardDescription>
         </div>
-        <Button size="sm" onClick={() => setShowAddDialog(true)}>
+        <Button
+          size="sm"
+          onClick={() => setShowAddDialog(true)}
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Add
         </Button>
