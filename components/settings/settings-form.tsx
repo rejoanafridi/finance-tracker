@@ -131,12 +131,11 @@ export function SettingsForm() {
                                             <SelectItem value="EUR">
                                                 EUR (€)
                                             </SelectItem>
-                                            <SelectItem value="GBP">
-                                                GBP (£)
+                                            
+                                            <SelectItem value="BDT">
+                                                BDT (৳)
                                             </SelectItem>
-                                            <SelectItem value="JPY">
-                                                JPY (¥)
-                                            </SelectItem>
+                                            
                                             <SelectItem value="CAD">
                                                 CAD ($)
                                             </SelectItem>
@@ -172,7 +171,7 @@ export function SettingsForm() {
                             <Button type="submit">Add</Button>
                         </form>
                         <div className="flex flex-wrap gap-2 pt-4">
-                            {categories.map((category) => (
+                            {categories?.map((category) => (
                                 <Badge
                                     key={category}
                                     variant="outline"
@@ -190,7 +189,7 @@ export function SettingsForm() {
                                     </Button>
                                 </Badge>
                             ))}
-                            {categories.length === 0 && (
+                            {categories?.length === 0 && (
                                 <p className="text-sm text-muted-foreground">
                                     No categories added yet.
                                 </p>

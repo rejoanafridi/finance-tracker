@@ -9,10 +9,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { format } from "date-fns"
 import { useState } from "react"
 import { motion } from "framer-motion"
+import { useFinance } from "@/context/finance-context"
 
 export function BudgetOverview() {
   const [period, setPeriod] = useState<"monthly" | "quarterly" | "yearly">("monthly")
   const { budgetSummary, isLoading } = useBudgets(period)
+  const { currency } = useFinance()
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -66,18 +68,18 @@ export function BudgetOverview() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Total Budget</span>
-                <span className="text-sm font-medium">{formatCurrency(summary.totals.budgeted)}</span>
+                <span className="text-sm font-medium">{formatCurrency(summary.totals.budgeted, currency)}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Total Spent</span>
-                <span className="text-sm font-medium">{formatCurrency(summary.totals.spent)}</span>
+                <span className="text-sm font-medium">{formatCurrency(summary.totals.spent, currency)}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Remaining</span>
                 <span
                   className={`text-sm font-medium ${summary.totals.remaining < 0 ? "text-red-500" : "text-green-500"}`}
                 >
-                  {formatCurrency(summary.totals.remaining)}
+                  {formatCurrency(summary.totals.remaining, currency)
                 </span>
               </div>
               <div className="pt-2">
@@ -106,7 +108,7 @@ export function BudgetOverview() {
                       <div className="flex items-center justify-between">
                         <span className="text-sm">{budget.category}</span>
                         <span className="text-sm">
-                          {formatCurrency(budget.spent)} / {formatCurrency(budget.budgeted)}
+                          {formatCurrency(budget.spent, currency)} / {formatCurrency(budget.budgeted, currency)
                         </span>
                       </div>
                       <Progress
