@@ -31,6 +31,7 @@ export async function fetchExchangeRates(apiKey: string) {
                 BDT: data.data.BDT.value
             }
         }
+        return data
     } catch (error) {
         console.error('Error fetching exchange rates:', error)
     }

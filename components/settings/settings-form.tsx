@@ -1,7 +1,5 @@
 'use client'
-
 import type React from 'react'
-
 import { useFinance } from '@/context/finance-context'
 import { Button } from '@/components/ui/button'
 import {
@@ -19,7 +17,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { X } from 'lucide-react'
 import { useState } from 'react'
-
 import {
     Select,
     SelectContent,
@@ -27,16 +24,18 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select'
-import { useCategories } from '@/hooks/use-categories'
 
 export function SettingsForm() {
     const {
+        currency,
+        setCurrency,
         categories,
-        createCategory: addCategory,
-        updateCategory,
-        deleteCategory: removeCategory
-    } = useCategories()
-    const { currency, setCurrency } = useFinance()
+        addCategory,
+        removeCategory,
+        exportData,
+        importData,
+        clearAllData
+    } = useFinance()
 
     const [newCategory, setNewCategory] = useState('')
     const [importError, setImportError] = useState('')
@@ -170,13 +169,13 @@ export function SettingsForm() {
                             <Button type="submit">Add</Button>
                         </form>
                         <div className="flex flex-wrap gap-2 pt-4">
-                            {categories?.map((category: any) => (
+                            {categories?.map((category: any, index) => (
                                 <Badge
-                                    key={category?._id}
+                                    key={index}
                                     variant="outline"
                                     className="flex items-center gap-1"
                                 >
-                                    {category?.name}
+                                    {category}
                                     <Button
                                         variant="ghost"
                                         size="icon"
