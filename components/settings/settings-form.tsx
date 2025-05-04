@@ -27,18 +27,17 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select'
+import { useCategories } from '@/hooks/use-categories'
 
 export function SettingsForm() {
     const {
         categories,
-        addCategory,
-        removeCategory,
-        exportData,
-        importData,
-        clearAllData,
-        currency,
-        setCurrency
-    } = useFinance()
+        createCategory: addCategory,
+        updateCategory,
+        deleteCategory: removeCategory
+    } = useCategories()
+    const { currency, setCurrency } = useFinance()
+
     const [newCategory, setNewCategory] = useState('')
     const [importError, setImportError] = useState('')
 
@@ -131,11 +130,11 @@ export function SettingsForm() {
                                             <SelectItem value="EUR">
                                                 EUR (€)
                                             </SelectItem>
-                                            
+
                                             <SelectItem value="BDT">
                                                 BDT (৳)
                                             </SelectItem>
-                                            
+
                                             <SelectItem value="CAD">
                                                 CAD ($)
                                             </SelectItem>
@@ -171,13 +170,13 @@ export function SettingsForm() {
                             <Button type="submit">Add</Button>
                         </form>
                         <div className="flex flex-wrap gap-2 pt-4">
-                            {categories?.map((category) => (
+                            {categories?.map((category: any) => (
                                 <Badge
-                                    key={category}
+                                    key={category?._id}
                                     variant="outline"
                                     className="flex items-center gap-1"
                                 >
-                                    {category}
+                                    {category?.name}
                                     <Button
                                         variant="ghost"
                                         size="icon"

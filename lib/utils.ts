@@ -15,9 +15,13 @@ let exchangeRates: Record<string, number> = {
 export async function fetchExchangeRates(apiKey: string) {
     try {
         const response = await fetch(
-            `https://api.currencyapi.com/v3/latest?apikey=${apiKey}&currencies=EUR%2CUSD%2CCAD%2CBDT`
+            `https://api.currencyapi.com/v3/latest?apikey=${apiKey}&currencies=EUR%2CUSD%2CCAD%2CBDT`,
+            {
+                cache: 'force-cache',
+                next: { revalidate: 86400 }
+            }
         )
-        
+
         const data = await response.json()
         if (data.data) {
             exchangeRates = {

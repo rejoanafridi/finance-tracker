@@ -29,10 +29,17 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
     const apiKey = 'cur_live_r4VcvXkTyIYm5H59iFWvn2KIceoiNVqwftX9G8zo'
 
-    const { data: exchangeRates } = useQuery({
+    const { data: exchangeRates } = useQuery<Record<string, number>>({
         queryKey: ['exchangeRates'],
         queryFn: () => fetchExchangeRates(apiKey),
-        staleTime: 24 * 60 * 60 * 1000
+        staleTime: 24 * 60 * 60 * 1000,
+        cacheTime: 25 * 60 * 60 * 1000,
+        initialData: {
+            USD: 1,
+            EUR: 0.8841601029,
+            CAD: 1.3811801869,
+            BDT: 121.9879131986
+        }
     })
     useEffect(() => {
         if (typeof window !== 'undefined') {
