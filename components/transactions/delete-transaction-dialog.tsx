@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Loader2 } from "lucide-react"
 
 interface DeleteTransactionDialogProps {
   open: boolean
@@ -19,10 +20,10 @@ interface DeleteTransactionDialogProps {
 }
 
 export function DeleteTransactionDialog({ open, onOpenChange, transaction }: DeleteTransactionDialogProps) {
-  const { deleteTransaction } = useFinance()
+  const { deleteTransaction, isLoading } = useFinance()
 
-  const handleDelete = () => {
-    deleteTransaction(transaction.id)
+  const handleDelete = async () => {
+    await deleteTransaction(transaction.id)
     onOpenChange(false)
   }
 
@@ -47,10 +48,11 @@ export function DeleteTransactionDialog({ open, onOpenChange, transaction }: Del
           </p>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={handleDelete}>
+          <Button variant="destructive" onClick={handleDelete} disabled={isLoading}>
+            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             Delete
           </Button>
         </DialogFooter>

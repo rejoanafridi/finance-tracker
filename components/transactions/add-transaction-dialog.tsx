@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -49,7 +49,7 @@ interface AddTransactionDialogProps {
 }
 
 export function AddTransactionDialog({ open, onOpenChange }: AddTransactionDialogProps) {
-  const { addTransaction, categories, addCategory } = useFinance()
+  const { addTransaction, categories, addCategory, isLoading } = useFinance()
   const [newCategory, setNewCategory] = useState("")
   const [showNewCategory, setShowNewCategory] = useState(false)
 
@@ -64,9 +64,8 @@ export function AddTransactionDialog({ open, onOpenChange }: AddTransactionDialo
     },
   })
 
-  function onSubmit(values: FormValues) {
-    addTransaction({
-      id: Date.now().toString(),
+  async function onSubmit(values: FormValues) {
+    await addTransaction({
       description: values.description,
       amount: values.amount,
       category: values.category,
@@ -77,9 +76,9 @@ export function AddTransactionDialog({ open, onOpenChange }: AddTransactionDialo
     onOpenChange(false)
   }
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     if (newCategory.trim()) {
-      addCategory(newCategory.trim())
+      await addCategory(newCategory.trim())
       form.setValue("category", newCategory.trim())
       setNewCategory("")
       setShowNewCategory(false)
@@ -153,7 +152,8 @@ export function AddTransactionDialog({ open, onOpenChange }: AddTransactionDialo
                               onChange={(e) => setNewCategory(e.target.value)}
                               className="mb-2"
                             />
-                            <Button type="button" size="sm" onClick={handleAddCategory}>
+                            <Button type="button" size="sm" onClick={handleAddCategory} disabled={isLoading}>
+                              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                               Add
                             </Button>
                           </div>
@@ -166,7 +166,8 @@ export function AddTransactionDialog({ open, onOpenChange }: AddTransactionDialo
                           value={newCategory}
                           onChange={(e) => setNewCategory(e.target.value)}
                         />
-                        <Button type="button" size="sm" onClick={handleAddCategory}>
+                        <Button type="button" size="sm" onClick={handleAddCategory} disabled={isLoading}>
+                          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                           Add
                         </Button>
                       </div>
@@ -230,7 +231,10 @@ export function AddTransactionDialog({ open, onOpenChange }: AddTransactionDialo
               )}
             />
             <DialogFooter>
-              <Button type="submit">Add Transaction</Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Add Transaction
+              </Button>
             </DialogFooter>
           </form>
         </Form>

@@ -8,6 +8,7 @@ import { SessionProvider } from "next-auth/react"
 import { ThemeProvider } from "@/components/theme-provider"
 import { FinanceProvider } from "@/context/finance-context"
 import { useState } from "react"
+import { Toaster } from "sonner"
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -17,6 +18,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           queries: {
             staleTime: 60 * 1000, // 1 minute
             refetchOnWindowFocus: false,
+            retry: 1,
           },
         },
       }),
@@ -27,6 +29,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <SessionProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <FinanceProvider>{children}</FinanceProvider>
+          <Toaster position="top-right" />
         </ThemeProvider>
       </SessionProvider>
       <ReactQueryDevtools initialIsOpen={false} />

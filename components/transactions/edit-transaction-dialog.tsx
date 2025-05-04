@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -50,7 +50,7 @@ interface EditTransactionDialogProps {
 }
 
 export function EditTransactionDialog({ open, onOpenChange, transaction }: EditTransactionDialogProps) {
-  const { updateTransaction, categories } = useFinance()
+  const { updateTransaction, categories, isLoading } = useFinance()
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -63,8 +63,8 @@ export function EditTransactionDialog({ open, onOpenChange, transaction }: EditT
     },
   })
 
-  function onSubmit(values: FormValues) {
-    updateTransaction({
+  async function onSubmit(values: FormValues) {
+    await updateTransaction({
       ...transaction,
       description: values.description,
       amount: values.amount,
@@ -188,7 +188,10 @@ export function EditTransactionDialog({ open, onOpenChange, transaction }: EditT
               )}
             />
             <DialogFooter>
-              <Button type="submit">Save Changes</Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Save Changes
+              </Button>
             </DialogFooter>
           </form>
         </Form>
