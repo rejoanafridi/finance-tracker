@@ -5,7 +5,6 @@ import { getToken } from "next-auth/jwt"
 export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request })
   const isAuthenticated = !!token
-
   // Public paths that don't require authentication
   const publicPaths = ["/auth/signin", "/auth/signup", "/auth/forgot-password"]
   const isPublicPath = publicPaths.includes(request.nextUrl.pathname)

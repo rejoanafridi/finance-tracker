@@ -43,7 +43,7 @@ export function MainNav() {
   ]
 
   return (
-    <div className="mr-4 hidden md:flex">
+    <div className="mr-4 hidden md:flex justify-center">
       <Link href="/" className="mr-6 flex items-center space-x-2">
         <Wallet className="h-6 w-6" />
         <span className="hidden font-bold sm:inline-block">Finance Tracker</span>

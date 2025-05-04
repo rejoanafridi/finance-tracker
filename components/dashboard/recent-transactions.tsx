@@ -62,8 +62,8 @@ export function RecentTransactions() {
       <CardContent>
         <div className="space-y-4">
           {recentTransactions.length > 0 ? (
-            recentTransactions.map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between">
+            recentTransactions.map((transaction, index) => (
+              <div key={index} className="flex items-center justify-between">
                 <div className="space-y-1">
                   <p className="text-sm font-medium leading-none">{transaction.description}</p>
                   <p className="text-xs text-muted-foreground">{formatDate(transaction.date)}</p>
