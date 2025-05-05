@@ -30,11 +30,11 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 }
 
 // Update a transaction
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: {  params: { id: string } }) {
   try {
     await connectToDatabase()
     const user = await auth()
-
+    console.log(params)
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -46,7 +46,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: "Transaction not found" }, { status: 404 })
     }
 
-    return NextResponse.json(transaction)
+    return NextResponse.json({ message: "Transaction updated successfully", transaction })
   } catch (error) {
     console.error("Error updating transaction:", error)
     return NextResponse.json({ error: "Failed to update transaction" }, { status: 500 })

@@ -229,11 +229,11 @@ export function TransactionList() {
                             <TableBody>
                                 {displayTransactions.map((transaction) => (
                                     <TableRow
-                                        key={transaction?.id}
+                                        key={transaction?._id}
                                         className="cursor-pointer hover:bg-muted/50"
                                         onClick={() =>
                                             router.push(
-                                                `/transactions/${transaction.id}`
+                                                `/transactions/${transaction._id}`
                                             )
                                         }
                                     >

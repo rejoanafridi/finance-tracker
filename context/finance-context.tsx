@@ -322,7 +322,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
             // Try API first
             try {
                 const response = await fetch(
-                    `/api/transactions/${transaction.id}`,
+                    `/api/transactions/${transaction._id}`,
                     {
                         method: 'PUT',
                         headers: {
@@ -335,7 +335,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
                 if (response.ok) {
                     setTransactions((prev) =>
                         prev.map((t) =>
-                            t.id === transaction.id ? transaction : t
+                            t._id === transaction._id ? transaction : t
                         )
                     )
                     toast.success('Transaction updated successfully')
@@ -347,7 +347,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
                 console.error('API call failed, using local state', err)
                 // Fallback to local state
                 setTransactions((prev) =>
-                    prev.map((t) => (t.id === transaction.id ? transaction : t))
+                    prev.map((t) => (t._id === transaction._id ? transaction : t))
                 )
                 toast.success('Transaction updated (offline mode)')
             }
