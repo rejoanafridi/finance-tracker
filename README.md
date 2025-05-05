@@ -1,30 +1,48 @@
-# Modern Finance Tracker
+# 💰 Finance Tracker
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+A modern, full-stack personal finance management web app built with the latest technologies. Track your expenses, manage categories, switch currencies with live exchange rates, and sync data in real time across devices.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/rejoanafridis-projects/v0-modern-finance-tracker)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/lK80E7853di)
+🚀 **Live App**: [financeracker.vercel.app](https://financeracker.vercel.app/)
 
-## Overview
+---
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+## 🧩 Features
 
-## Deployment
+-   ✅ Authentication (Login / Logout / Profile Management)
+-   💸 Add, Edit, Delete Transactions
+-   🗂️ Custom Categories Management
+-   🌍 Multi-Currency Support with Live Exchange Rates
+-   ☁️ Real-Time Backend Sync (Cross-device)
+-   🧠 React Query Caching with 24h Exchange Rate Refresh
+-   📊 Intuitive Dashboard with Filters and Summaries
+-   🌙 Fully Responsive & Accessible UI/UX
 
-Your project is live at:
+---
 
-**[https://vercel.com/rejoanafridis-projects/v0-modern-finance-tracker](https://vercel.com/rejoanafridis-projects/v0-modern-finance-tracker)**
+## ⚙️ Tech Stack
 
-## Build your app
+| Layer           | Tech                                |
+| --------------- | ----------------------------------- |
+| **Frontend**    | React.js, Next.js App Router        |
+| **UI**          | Tailwind CSS, Framer Motion         |
+| **State**       | React Context, React Query          |
+| **Backend API** | Next.js API Routes                  |
+| **Database**    | MongoDB (Mongoose ORM)              |
+| **Auth**        | JWT / Cookies (or NextAuth if used) |
+| **Deployments** | Vercel (Frontend & API)             |
 
-Continue building your app on:
+---
 
-**[https://v0.dev/chat/projects/lK80E7853di](https://v0.dev/chat/projects/lK80E7853di)**
+## 🔧 Setup Instructions
 
-## How It Works
+```bash
+# 1. Clone the repo
+git clone https://github.com/rejoanafridi/finance-tracker.git
+cd finance-tracker
 
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+# 2. Install dependencies
+npm install
+
+# 3. Create .env.local
+touch .env.local
+```
