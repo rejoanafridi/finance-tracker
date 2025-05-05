@@ -321,12 +321,18 @@ export function TransactionList() {
                 <>
                     <EditTransactionDialog
                         open={showEditDialog}
-                        onOpenChange={setShowEditDialog}
+                        onOpenChange={(close) => {
+                            setShowEditDialog(close)
+                            setSelectedTransaction(null)
+                        }}
                         transaction={selectedTransaction}
                     />
                     <DeleteTransactionDialog
                         open={showDeleteDialog}
-                        onOpenChange={setShowDeleteDialog}
+                        onOpenChange={(close) => {
+                            setShowEditDialog(close)
+                            setSelectedTransaction(null)
+                        }}
                         transaction={selectedTransaction}
                     />
                 </>

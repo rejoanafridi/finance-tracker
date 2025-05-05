@@ -290,6 +290,9 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
                     const newTransaction = await response.json()
                     setTransactions((prev) => [...prev, newTransaction])
                     toast.success('Transaction added successfully')
+                    queryClient.invalidateQueries({
+                        queryKey: ['transactions']
+                    })
                     return
                 } else {
                     throw new Error('Failed to add transaction')
@@ -310,7 +313,6 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
             console.error(err)
         } finally {
             setIsLoading(false)
-            queryClient.invalidateQueries(['transactions'])
         }
     }
 
@@ -347,7 +349,9 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
                 console.error('API call failed, using local state', err)
                 // Fallback to local state
                 setTransactions((prev) =>
-                    prev.map((t) => (t._id === transaction._id ? transaction : t))
+                    prev.map((t) =>
+                        t._id === transaction._id ? transaction : t
+                    )
                 )
                 toast.success('Transaction updated (offline mode)')
             }
@@ -372,8 +376,9 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
                 })
 
                 if (response.ok) {
-                    setTransactions((prev) => prev.filter((t) => t.id !== id))
+                    setTransactions((prev) => prev.filter((t) => t._id !== id))
                     toast.success('Transaction deleted successfully')
+
                     return
                 } else {
                     throw new Error('Failed to delete transaction')
@@ -381,7 +386,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
             } catch (err) {
                 console.error('API call failed, using local state', err)
                 // Fallback to local state
-                setTransactions((prev) => prev.filter((t) => t.id !== id))
+                setTransactions((prev) => prev.filter((t) => t._id !== id))
                 toast.success('Transaction deleted (offline mode)')
             }
         } catch (err) {

@@ -7,12 +7,13 @@ import { Transaction } from "@/models/transaction"
 import { auth } from "@/lib/auth"
 
 interface TransactionPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
-export default async function TransactionPage({ params }: TransactionPageProps) {
+export default async function TransactionPage(props: TransactionPageProps) {
+  const params = await props.params;
   try {
     await connectToDatabase()
     const user = await auth()

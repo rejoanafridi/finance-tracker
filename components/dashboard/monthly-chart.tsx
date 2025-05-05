@@ -10,32 +10,44 @@ import {
     CardTitle
 } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent
-} from '@/components/ui/chart'
-import {
-    Bar,
-    BarChart,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Sector,
-    XAxis,
-    YAxis
-} from 'recharts'
 import { useState, useEffect } from 'react'
 import { useFinance } from '@/context/finance-context'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+    BarChart,
+    Bar,
+    PieChart,
+    Pie,
+    Sector,
+    XAxis,
+    YAxis,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+    Cell
+} from 'recharts'
+
+// Predefined colors for consistent category coloring
+const PIE_CHART_COLORS = [
+    '#8884d8',
+    '#83a6ed',
+    '#8dd1e1',
+    '#82ca9d',
+    '#a4de6c',
+    '#d0ed57',
+    '#ffc658',
+    '#ff8042',
+    '#0088FE',
+    '#00C49F',
+    '#FFBB28',
+    '#FF8042'
+]
 
 export function MonthlyChart() {
     const { dashboardData, isLoading } = useDashboard()
     const { currency } = useFinance()
     const [activeIndex, setActiveIndex] = useState(0)
     const [isMounted, setIsMounted] = useState(false)
-
-    const monthlyData = dashboardData?.monthlyData || []
-    const categorySummary = dashboardData?.categorySummary || {}
 
     useEffect(() => {
         setIsMounted(true)
@@ -50,66 +62,35 @@ export function MonthlyChart() {
                 </CardHeader>
                 <CardContent>
                     <div className="h-[300px] flex items-center justify-center">
-                        <p>Loading chart data...</p>
+                        <Skeleton className="h-full w-full" />
                     </div>
                 </CardContent>
             </Card>
         )
     }
 
-    // Prepare data for monthly income/expense chart
-    // const monthlyData = transactions.reduce(
-    //   (acc, transaction) => {
-    //     const date = new Date(transaction.date)
-    //     const month = date.toLocaleString("default", { month: "short" })
-
-    //     if (!acc[month]) {
-    //       acc[month] = { month, income: 0, expense: 0 }
-    //     }
-
-    //     if (transaction.type === "income") {
-    //       acc[month].income += transaction.amount
-    //     } else {
-    //       acc[month].expense += transaction.amount
-    //     }
-
-    //     return acc
-    //   },
-    //   {} as Record<string, { month: string; income: number; expense: number }>,
-    // )
+    const monthlyData = dashboardData?.monthlyData || []
+    const categorySummary = dashboardData?.categorySummary || {}
 
     const barChartData = monthlyData
-
-    // Prepare data for category pie chart
     const pieChartData = Object.entries(categorySummary).map(
         ([name, amount], index) => ({
             name,
             value: amount,
-            fill: [
-                '#8884d8',
-                '#83a6ed',
-                '#8dd1e1',
-                '#82ca9d',
-                '#a4de6c',
-                '#d0ed57',
-                '#ffc658',
-                '#ff8042',
-                '#0088FE',
-                '#00C49F',
-                '#FFBB28',
-                '#FF8042'
-            ][index % 12]
+            fill: PIE_CHART_COLORS[index % PIE_CHART_COLORS.length]
         })
     )
 
-    const onPieEnter = (_: any, index: number) => {
-        setActiveIndex(index)
-    }
+    // Custom formatter for currency in tooltips
+    const currencyFormatter = (value) => formatCurrency(value, currency)
 
-    const renderActiveShape = (props: any) => {
+    // Custom Pie Chart Active Sector
+    const renderActiveShape = (props) => {
+        const RADIAN = Math.PI / 180
         const {
             cx,
             cy,
+            midAngle,
             innerRadius,
             outerRadius,
             startAngle,
@@ -120,17 +101,18 @@ export function MonthlyChart() {
             value
         } = props
 
+        const sin = Math.sin(-RADIAN * midAngle)
+        const cos = Math.cos(-RADIAN * midAngle)
+        const sx = cx + (outerRadius + 10) * cos
+        const sy = cy + (outerRadius + 10) * sin
+        const mx = cx + (outerRadius + 30) * cos
+        const my = cy + (outerRadius + 30) * sin
+        const ex = mx + (cos >= 0 ? 1 : -1) * 22
+        const ey = my
+        const textAnchor = cos >= 0 ? 'start' : 'end'
+
         return (
             <g>
-                <text x={cx} y={cy} dy={-20} textAnchor="middle" fill={fill}>
-                    {payload.name}
-                </text>
-                <text x={cx} y={cy} dy={8} textAnchor="middle" fill="#999">
-                    {formatCurrency(value, currency)}
-                </text>
-                <text x={cx} y={cy} dy={25} textAnchor="middle" fill="#999">
-                    {`(${(percent * 100).toFixed(2)}%)`}
-                </text>
                 <Sector
                     cx={cx}
                     cy={cy}
@@ -149,8 +131,64 @@ export function MonthlyChart() {
                     outerRadius={outerRadius + 10}
                     fill={fill}
                 />
+                <path
+                    d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
+                    stroke={fill}
+                    fill="none"
+                />
+                <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
+                <text
+                    x={ex + (cos >= 0 ? 1 : -1) * 12}
+                    y={ey}
+                    textAnchor={textAnchor}
+                    fill="#333"
+                >
+                    {payload.name}
+                </text>
+                <text
+                    x={ex + (cos >= 0 ? 1 : -1) * 12}
+                    y={ey}
+                    dy={18}
+                    textAnchor={textAnchor}
+                    fill="#999"
+                >
+                    {`${formatCurrency(value, currency)} (${(
+                        percent * 100
+                    ).toFixed(2)}%)`}
+                </text>
             </g>
         )
+    }
+
+    // Custom tooltip for bar chart
+    const CustomBarTooltip = ({ active, payload }) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className="recharts-custom-tooltip rounded-lg border bg-background p-4 shadow-sm">
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="flex items-center gap-1">
+                            <div className="h-2 w-2 rounded bg-primary" />
+                            <span className="text-sm">Income:</span>
+                        </div>
+                        <span className="text-sm font-medium">
+                            {formatCurrency(payload[0].value, currency)}
+                        </span>
+                        <div className="flex items-center gap-1">
+                            <div className="h-2 w-2 rounded bg-muted-foreground" />
+                            <span className="text-sm">Expense:</span>
+                        </div>
+                        <span className="text-sm font-medium">
+                            {formatCurrency(payload[1].value, currency)}
+                        </span>
+                    </div>
+                </div>
+            )
+        }
+        return null
+    }
+
+    const onPieEnter = (_, index) => {
+        setActiveIndex(index)
     }
 
     return (
@@ -167,81 +205,60 @@ export function MonthlyChart() {
                         <TabsTrigger value="bar">Bar Chart</TabsTrigger>
                         <TabsTrigger value="pie">Pie Chart</TabsTrigger>
                     </TabsList>
+
                     <TabsContent value="bar" className="h-[300px]">
-                        <ChartContainer>
+                        {barChartData.length === 0 ? (
+                            <div className="flex h-full items-center justify-center text-muted-foreground">
+                                No data available for the selected period
+                            </div>
+                        ) : (
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart
                                     data={barChartData}
                                     margin={{
-                                        top: 10,
-                                        right: 10,
-                                        left: 0,
+                                        top: 20,
+                                        right: 20,
+                                        left: 60,
                                         bottom: 20
                                     }}
                                 >
-                                    <XAxis dataKey="month" />
-                                    <YAxis
-                                        tickFormatter={(value) => `$${value}`}
-                                    />
-                                    <ChartTooltip
-                                        content={({ active, payload }) => {
-                                            if (
-                                                active &&
-                                                payload &&
-                                                payload.length
-                                            ) {
-                                                return (
-                                                    <ChartTooltipContent>
-                                                        <div className="grid grid-cols-2 gap-2">
-                                                            <div className="flex items-center gap-1">
-                                                                <div className="h-2 w-2 rounded bg-primary"></div>
-                                                                <span className="text-sm">
-                                                                    Income:
-                                                                </span>
-                                                            </div>
-                                                            <span className="text-sm font-medium">
-                                                                {formatCurrency(
-                                                                    payload[0]
-                                                                        .value as number,
-                                                                    currency
-                                                                )}
-                                                            </span>
-                                                            <div className="flex items-center gap-1">
-                                                                <div className="h-2 w-2 rounded bg-muted-foreground"></div>
-                                                                <span className="text-sm">
-                                                                    Expense:
-                                                                </span>
-                                                            </div>
-                                                            <span className="text-sm font-medium">
-                                                                {formatCurrency(
-                                                                    payload[1]
-                                                                        .value as number,
-                                                                    currency
-                                                                )}
-                                                            </span>
-                                                        </div>
-                                                    </ChartTooltipContent>
-                                                )
-                                            }
-                                            return null
+                                    <XAxis
+                                        dataKey="month"
+                                        tick={{
+                                            fill: 'var(--muted-foreground)'
                                         }}
                                     />
+                                    <YAxis
+                                        tickFormatter={currencyFormatter}
+                                        tick={{
+                                            fill: 'var(--muted-foreground)'
+                                        }}
+                                    />
+                                    <Tooltip content={<CustomBarTooltip />} />
+                                    <Legend />
                                     <Bar
                                         dataKey="income"
-                                        fill="hsl(var(--primary))"
+                                        fill="var(--primary)"
                                         radius={[4, 4, 0, 0]}
+                                        name="Income"
                                     />
                                     <Bar
                                         dataKey="expense"
-                                        fill="hsl(var(--muted-foreground))"
+                                        fill="var(--muted-foreground)"
                                         radius={[4, 4, 0, 0]}
+                                        name="Expense"
                                     />
                                 </BarChart>
                             </ResponsiveContainer>
-                        </ChartContainer>
+                        )}
                     </TabsContent>
+
                     <TabsContent value="pie" className="h-[300px]">
-                        <ChartContainer>
+                        {pieChartData.length === 0 ? (
+                            <div className="flex h-full items-center justify-center text-muted-foreground">
+                                No category data available
+                            </div>
+                        ) : (
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
@@ -252,12 +269,25 @@ export function MonthlyChart() {
                                         cy="50%"
                                         innerRadius={60}
                                         outerRadius={80}
+                                        paddingAngle={2}
                                         dataKey="value"
                                         onMouseEnter={onPieEnter}
-                                    />
+                                    >
+                                        {pieChartData.map((entry, index) => (
+                                            <Cell
+                                                key={`cell-${index}`}
+                                                fill={
+                                                    PIE_CHART_COLORS[
+                                                        index %
+                                                            PIE_CHART_COLORS.length
+                                                    ]
+                                                }
+                                            />
+                                        ))}
+                                    </Pie>
                                 </PieChart>
                             </ResponsiveContainer>
-                        </ChartContainer>
+                        )}
                     </TabsContent>
                 </Tabs>
             </CardContent>

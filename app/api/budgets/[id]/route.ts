@@ -13,7 +13,8 @@ const budgetUpdateSchema = z.object({
 })
 
 // Get a specific budget
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await connectToDatabase()
     const user = await auth()
@@ -39,7 +40,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 }
 
 // Update a budget
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await connectToDatabase()
     const user = await auth()
@@ -83,7 +85,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 }
 
 // Delete a budget
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   try {
     await connectToDatabase()
     const user = await auth()
